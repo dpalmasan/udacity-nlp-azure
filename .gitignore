@@ -106,3 +106,5 @@ dist
 # Development tools/samples
 BotFramework-Emulator*.AppImage
 botbuilder-samples/
+
+.env
