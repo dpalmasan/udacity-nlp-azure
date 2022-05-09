@@ -39,14 +39,32 @@ class DentaBot extends ActivityHandler {
       //  return;
       // }
       // else {...}
-
+      const answers = await this.QnAMaker.getAnswers(context);
+      const result = await this.IntentRecognizer.executeLuisQuery(context);
+      const topIntent = result.luisResult.prediction.topIntent;
+      let message;
+      if (result.intents[topIntent].score > 0.65) {
+        if (topIntent === 'getAvailability') {
+          message = await this.DentistScheduler.getAvailability();
+        } else {
+          message = await this.DentistScheduler.scheduleAppointment(
+            this.IntentRecognizer.getTimeEntity(result));
+        };
+      } else {
+        message = answers[0].answer;
+      }
+      await context.sendActivity(MessageFactory.text(message, message));
       await next();
     });
 
     this.onMembersAdded(async (context, next) => {
       const membersAdded = context.activity.membersAdded;
       //write a custom greeting
-      const welcomeText = '';
+      const welcomeText = 'Welcome! I am Contoso DentBot, nice to meet you.\n\n'
+        + 'I can answer questions regarding the Contoso Dental Office. Moreover '
+        + 'I know all the matters related to appointments, such as providing '
+        + 'available times and scheduling an appointment for you!\n\n'
+        + 'What can I do for you today?'
       for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
         if (membersAdded[cnt].id !== context.activity.recipient.id) {
           await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
