@@ -28,8 +28,8 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about how bots work.
 const adapter = new BotFrameworkAdapter({
-  appId: process.env.MicrosoftAppId,
-  appPassword: process.env.MicrosoftAppPassword,
+  appId: process.env.MICROSOFTAPPID,
+  appPassword: process.env.MICROSOFTAPPPASSWORD,
   channelAuthTenant: 'f8cdef31-a31e-4b4a-93e4-5f571e91255a',
 });
 
@@ -58,19 +58,19 @@ adapter.onTurnError = onTurnErrorHandler;
 
 // Map configuration values values from .env file into the required format for each service.
 const QnAConfiguration = {
-  knowledgeBaseId: process.env.QnAKnowledgebaseId,
-  endpointKey: process.env.QnAAuthKey,
-  host: process.env.QnAEndpointHostName
+  knowledgeBaseId: process.env.QNAKNOWLEDGEBASEID,
+  endpointKey: process.env.QNAAUTHKEY,
+  host: process.env.QNAENDPOINTHOSTNAME
 };
 
 const LuisConfiguration = {
-  applicationId: process.env.LuisAppId,
-  endpointKey: process.env.LuisAPIKey,
-  endpoint: process.env.LuisAPIHostName,
+  applicationId: process.env.LUISAPPID,
+  endpointKey: process.env.LUISAPIKEY,
+  endpoint: process.env.LUISAPIHOSTNAME,
 }
 
 const SchedulerConfiguration = {
-  SchedulerEndpoint: process.env.SchedulerEndpoint
+  SchedulerEndpoint: process.env.SCHEDULERENDPOINT
 }
 //pack each service configuration into 
 const configuration = {
@@ -100,8 +100,8 @@ server.get('/', (req, res) => {
 server.on('upgrade', (req, socket, head) => {
   // Create an adapter scoped to this WebSocket connection to allow storing session data.
   const streamingAdapter = new BotFrameworkAdapter({
-    appId: process.env.MicrosoftAppId,
-    appPassword: process.env.MicrosoftAppPassword
+    appId: process.env.MICROSOFTAPPID,
+    appPassword: process.env.MICROSOFTAPPPASSWORD
   });
   // Set onTurnError for the BotFrameworkAdapter created for each connection.
   streamingAdapter.onTurnError = onTurnErrorHandler;
