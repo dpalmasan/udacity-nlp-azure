@@ -13,9 +13,10 @@ const restify = require('restify');
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 const {
-  CloudAdapter,
   ConfigurationServiceClientCredentialFactory,
-  createBotFrameworkAuthenticationFromConfiguration
+  createBotFrameworkAuthenticationFromConfiguration,
+  BotAdapter,
+  CloudAdapter
 } = require('botbuilder');
 
 // This bot's main dialog.
@@ -108,10 +109,7 @@ server.get('/', (req, res) => {
 // Listen for Upgrade requests for Streaming.
 server.on('upgrade', (req, socket, head) => {
   // Create an adapter scoped to this WebSocket connection to allow storing session data.
-  const streamingAdapter = new BotFrameworkAdapter({
-    appId: process.env.MICROSOFTAPPID,
-    appPassword: process.env.MICROSOFTAPPPASSWORD
-  });
+  const streamingAdapter = new CloudAdapter(botFrameworkAuthentication);
   // Set onTurnError for the BotFrameworkAdapter created for each connection.
   streamingAdapter.onTurnError = onTurnErrorHandler;
 
