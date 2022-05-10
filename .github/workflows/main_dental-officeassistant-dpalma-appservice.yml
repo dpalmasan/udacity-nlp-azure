@@ -28,6 +28,22 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_MicrosoftAppId: ${{ secrets.MICROSOFTAPPID }}
+          envkey_MicrosoftAppPassword: ${{ secrets.MICROSOFTAPPPASSWORD }}
+          envkey_QnAKnowledgebaseId: ${{ secrets.QNAKNOWLEDGEBASEID }}
+          envkey_QnAAuthKey: ${{ secrets.QNAAUTHKEY }}
+          envkey_QnAEndpointHostName: ${{ secrets.QNAENDPOINTHOSTNAME }}
+          envkey_LuisAppId: ${{ secrets.LUISAPPID }}
+          envkey_LuisAPIKey: ${{ secrets.LUISAPIKEY }}
+          envkey_LuisAPIHostName: ${{ secrets.LUISAPIHOSTNAME }}
+          envkey_SchedulerEndpoint: ${{ secrets.SCHEDULERENDPOINT }}
+          directory: starter/ContosoDentistryChatBot/
+          file_name: .env
+          fail_on_empty: false
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
