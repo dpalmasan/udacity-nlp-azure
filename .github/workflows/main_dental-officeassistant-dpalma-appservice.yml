@@ -40,6 +40,8 @@ jobs:
           envkey_LuisAPIKey: ${{ secrets.LUISAPIKEY }}
           envkey_LuisAPIHostName: ${{ secrets.LUISAPIHOSTNAME }}
           envkey_SchedulerEndpoint: ${{ secrets.SCHEDULERENDPOINT }}
+          envkey_MICROSOFTAPPTENANTID: ${{ secrets.MICROSOFTAPPTENANTID }}
+          envkey_MICROSOFTAPPTYPE: SingleTenant
           directory: starter/ContosoDentistryChatBot/
           file_name: .env
           fail_on_empty: false
