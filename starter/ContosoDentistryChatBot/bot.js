@@ -39,21 +39,26 @@ class DentaBot extends ActivityHandler {
       //  return;
       // }
       // else {...}
-      const answers = await this.QnAMaker.getAnswers(context);
-      const result = await this.IntentRecognizer.executeLuisQuery(context);
-      const topIntent = result.luisResult.prediction.topIntent;
-      let message;
-      if (result.intents[topIntent].score > 0.65) {
-        if (topIntent === 'getAvailability') {
-          message = await this.DentistScheduler.getAvailability();
+      try {
+        const answers = await this.QnAMaker.getAnswers(context);
+        const result = await this.IntentRecognizer.executeLuisQuery(context);
+        const topIntent = result.luisResult.prediction.topIntent;
+        let message;
+        if (result.intents[topIntent].score > 0.65) {
+          if (topIntent === 'getAvailability') {
+            message = await this.DentistScheduler.getAvailability();
+          } else {
+            message = await this.DentistScheduler.scheduleAppointment(
+              this.IntentRecognizer.getTimeEntity(result));
+          };
         } else {
-          message = await this.DentistScheduler.scheduleAppointment(
-            this.IntentRecognizer.getTimeEntity(result));
-        };
-      } else {
-        message = answers[0].answer;
+          message = answers[0].answer;
+        }
+        await context.sendActivity(MessageFactory.text(message, message));
+      } catch (e) {
+        console.error(e);
       }
-      await context.sendActivity(MessageFactory.text(message, message));
+
       await next();
     });
 
@@ -67,7 +72,12 @@ class DentaBot extends ActivityHandler {
         + 'What can I do for you today?'
       for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
         if (membersAdded[cnt].id !== context.activity.recipient.id) {
-          await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
+          try {
+            await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
+          } catch (e) {
+            console.error(e);
+          }
+
         }
       }
       // by calling next() you ensure that the next BotHandler is run.
