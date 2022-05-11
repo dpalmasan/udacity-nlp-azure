@@ -15,7 +15,6 @@ const restify = require('restify');
 const {
   ConfigurationServiceClientCredentialFactory,
   createBotFrameworkAuthenticationFromConfiguration,
-  BotAdapter,
   CloudAdapter
 } = require('botbuilder');
 
@@ -24,6 +23,7 @@ const { DentaBot } = require('./bot');
 
 // Create HTTP server
 const server = restify.createServer();
+server.use(restify.plugins.bodyParser());
 server.listen(process.env.port || process.env.PORT || 3978, () => {
   console.log(`\n${server.name} listening to ${server.url}`);
   console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
@@ -93,11 +93,9 @@ const configuration = {
 const myBot = new DentaBot(configuration, {});
 
 // Listen for incoming requests.
-server.post('/api/messages', (req, res) => {
-  adapter.processActivity(req, res, async (context) => {
-    // Route to main dialog.
-    await myBot.run(context);
-  });
+server.post('/api/messages', async (req, res) => {
+  // Route received a request to adapter for processing
+  await adapter.process(req, res, (context) => myBot.run(context));
 });
 
 server.get('/', (req, res) => {
@@ -107,15 +105,11 @@ server.get('/', (req, res) => {
 });
 
 // Listen for Upgrade requests for Streaming.
-server.on('upgrade', (req, socket, head) => {
+server.on('upgrade', async (req, socket, head) => {
   // Create an adapter scoped to this WebSocket connection to allow storing session data.
   const streamingAdapter = new CloudAdapter(botFrameworkAuthentication);
-  // Set onTurnError for the BotFrameworkAdapter created for each connection.
+  // Set onTurnError for the CloudAdapter created for each connection.
   streamingAdapter.onTurnError = onTurnErrorHandler;
 
-  streamingAdapter.useWebSocket(req, socket, head, async (context) => {
-    // After connecting via WebSocket, run this logic for every request sent over
-    // the WebSocket connection.
-    await myBot.run(context);
-  });
+  await streamingAdapter.process(req, socket, head, (context) => myBot.run(context));
 });
